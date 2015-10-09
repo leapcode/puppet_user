@@ -78,9 +78,18 @@ define user::managed(
     shell          => $real_shell,
     groups         => $groups,
     membership     => $membership,
-    purge_ssh_keys => $purge_ssh_keys,
   }
 
+  if $purge_ssh_keys {
+    if versioncmp($::puppetversion, '3.6') >= 0 {
+      User[$name] {
+        purge_ssh_keys => true
+      }
+    }
+    else {
+      notice("Parameter purge_ssh_keys is unsupported in your Puppet agent!")
+    }
+  }
 
   if $managehome {
     file{$real_homedir: }
